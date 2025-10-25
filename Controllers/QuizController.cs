@@ -4,90 +4,189 @@ using QuizApp.Services;
 
 namespace QuizApp.Controllers;
 
-public class QuizController(IQuizRepository repo) : Controller
+public class QuizController : Controller
 {
-    private readonly IQuizRepository _repo = repo;
-    private static readonly Random _rng = new();
+    private readonly IQuizRepository _repo;
+    private readonly ILogger<QuizController> _logger;
 
-    [HttpGet("{id?}")]
-    public IActionResult Index(string id = "mvc", bool shuffle=true, int? minutes=null)
+    public QuizController(IQuizRepository repo, ILogger<QuizController> logger)
     {
-        var quiz = _repo.GetById(id);
+        _repo = repo;
+        _logger = logger;
+    }
 
-        // Optionally shuffle questions and answers
-        if (shuffle)
+    [HttpGet]
+    public IActionResult Index(string id = "mvc", bool shuffle = false, int? minutes = null)
+    {
+        try
         {
-            quiz.Questions = quiz.Questions
-                .OrderBy(_ => _rng.Next())
-                .Select(q => new Question
+            var quiz = _repo.GetById(id);
+            if (quiz == null)
+            {
+                _logger.LogWarning("Quiz with id '{QuizId}' not found", id);
+                return NotFound($"Quiz with id '{id}' not found.");
+            }
+
+            // Validate quiz has questions
+            if (!quiz.Questions.Any())
+            {
+                _logger.LogWarning("Quiz '{QuizId}' has no questions", id);
+                return BadRequest("This quiz has no questions available.");
+            }
+
+            // Create a copy to avoid modifying the original
+            var quizCopy = new Quiz
+            {
+                Id = quiz.Id,
+                Title = quiz.Title,
+                Questions = quiz.Questions.Select(q => new Question
                 {
                     Id = q.Id,
                     Text = q.Text,
-                    CorrectIndex = q.CorrectIndex,
-                    Options = q.Options.OrderBy(_ => _rng.Next()).ToList()
-                }).ToList();
+                    Options = new List<string>(q.Options),
+                    CorrectIndex = q.CorrectIndex
+                }).ToList()
+            };
 
-            // After shuffling options, we must re-map CorrectIndex
-            for (int i = 0; i < quiz.Questions.Count; i++)
-            {
-                var original = _repo.GetById(id).Questions.First(qq => qq.Text == quiz.Questions[i].Text);
-                var correctText = original.Options[original.CorrectIndex];
-                quiz.Questions[i].CorrectIndex = quiz.Questions[i].Options.FindIndex(x => x == correctText);
-            }
+            // No shuffling - keep original order
+            ViewBag.Minutes = Math.Max(1, minutes ?? 10); // Ensure minimum 1 minute
+            ViewBag.IsShuffled = false;
+            ViewBag.QuizId = id;
+
+            return View(quizCopy);
         }
-
-        ViewBag.Minutes = minutes ?? 10; // default 10 minutes total
-        return View(quiz);
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading quiz with id '{QuizId}'", id);
+            return StatusCode(500, "An error occurred while loading the quiz.");
+        }
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public IActionResult Result(string quizId, List<int> answers)
     {
-        var quiz = _repo.GetById(quizId);
-        var total = quiz.Questions.Count;
-
-        // Protect length mismatch
-        if (answers.Count != total)
+        try
         {
-            // Pad with -1 for unanswered
-            while (answers.Count < total) answers.Add(-1);
+            if (string.IsNullOrWhiteSpace(quizId))
+            {
+                _logger.LogWarning("Empty quizId provided in Result action");
+                return BadRequest("Quiz ID is required.");
+            }
+
+            // Get the original quiz data (not shuffled)
+            var originalQuiz = _repo.GetById(quizId);
+            if (originalQuiz == null)
+            {
+                _logger.LogWarning("Quiz with id '{QuizId}' not found in Result action", quizId);
+                return NotFound("Quiz not found.");
+            }
+
+            // Normalize answers to match question count
+            var total = originalQuiz.Questions.Count;
+            var normalizedAnswers = NormalizeAnswers(answers, total);
+
+            // Calculate results using the original quiz data
+            var result = CalculateQuizResult(originalQuiz, normalizedAnswers);
+
+            // Set view data
+            ViewBag.QuizTitle = originalQuiz.Title;
+            ViewBag.ScoreMessage = GetScoreMessage(result.Correct, result.Total);
+            ViewBag.Percentage = CalculatePercentage(result.Correct, result.Total);
+
+            _logger.LogInformation("Quiz '{QuizId}' completed: {Correct}/{Total} correct", 
+                quizId, result.Correct, result.Total);
+
+            return View(result);
         }
-
-        int correct = 0;
-        var correctIndices = new List<int>(total);
-        for (int i = 0; i < total; i++)
+        catch (Exception ex)
         {
-            var q = quiz.Questions[i];
-            correctIndices.Add(q.CorrectIndex);
-            if (answers[i] == q.CorrectIndex) correct++;
+            _logger.LogError(ex, "Error processing quiz result for quiz '{QuizId}'", quizId);
+            return StatusCode(500, "An error occurred while processing your results.");
         }
-
-        var model = new QuizResult
-        {
-            QuizId = quiz.Id,
-            Total = total,
-            Correct = correct,
-            Submitted = answers,
-            CorrectIndices = correctIndices
-        };
-
-        ViewBag.QuizTitle = quiz.Title;
-        ViewBag.ScoreMessage = correct switch
-        {
-            var c when c == total => "Perfect! Outstanding!",
-            var c when c >= (int)(0.8 * total) => "Great job!",
-            var c when c >= (int)(0.5 * total) => "Good try — keep practicing!",
-            _ => "Try again!"
-        };
-
-        return View(model);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public IActionResult Retake(string quizId)
     {
+        if (string.IsNullOrWhiteSpace(quizId))
+        {
+            _logger.LogWarning("Empty quizId provided in Retake action");
+            return RedirectToAction("Index", "Home");
+        }
+
+        _logger.LogInformation("User retaking quiz '{QuizId}'", quizId);
         return RedirectToAction(nameof(Index), new { id = quizId });
     }
+
+    #region Private Helper Methods
+
+
+    private List<int> NormalizeAnswers(List<int> answers, int totalQuestions)
+    {
+        if (answers == null)
+            return Enumerable.Repeat(-1, totalQuestions).ToList();
+
+        var normalized = new List<int>(answers);
+        
+        // Pad with -1 if not enough answers
+        while (normalized.Count < totalQuestions)
+        {
+            normalized.Add(-1);
+        }
+        
+        // Truncate if too many answers
+        if (normalized.Count > totalQuestions)
+        {
+            normalized = normalized.Take(totalQuestions).ToList();
+        }
+        
+        return normalized;
+    }
+
+    private QuizResult CalculateQuizResult(Quiz quiz, List<int> answers)
+    {
+        var total = quiz.Questions.Count;
+        var correct = 0;
+        var correctIndices = new List<int>(total);
+
+        for (int i = 0; i < total; i++)
+        {
+            var correctIndex = quiz.Questions[i].CorrectIndex;
+            correctIndices.Add(correctIndex);
+            
+            
+            if (answers[i] == correctIndex)
+            {
+                correct++;
+            }
+        }
+
+        return new QuizResult(quiz.Id, total, correct, answers, correctIndices);
+    }
+
+    private string GetScoreMessage(int correct, int total)
+    {
+        var percentage = CalculatePercentage(correct, total);
+        
+        return percentage switch
+        {
+            100 => "Perfect! Outstanding performance! 🎉",
+            >= 90 => "Excellent! Great job! 👏",
+            >= 80 => "Very good! Well done! 👍",
+            >= 70 => "Good work! Keep it up! 💪",
+            >= 60 => "Not bad! Try to improve! 📈",
+            >= 50 => "You're getting there! Practice more! 📚",
+            _ => "Don't give up! Review the material and try again! 🔄"
+        };
+    }
+
+    private int CalculatePercentage(int correct, int total)
+    {
+        if (total == 0) return 0;
+        return (int)Math.Round(100.0 * correct / total);
+    }
+
+    #endregion
 }

@@ -1,58 +1,141 @@
 [
-  {
-    "Id": "mvc",
-    "Title": "ASP.NET Core MVC Basics",
-    "Questions": [
-      {
-        "Text": "Which method in a controller returns a View in ASP.NET Core MVC?",
-        "Options": [
-          "Display()",
-          "Show()",
-          "View()",
-          "Render()"
-        ],
-        "CorrectIndex": 2
-      },
-      {
-        "Text": "In MVC architecture, what does the 'C' stand for?",
-        "Options": [
-          "Code",
-          "Controller",
-          "Class",
-          "Content"
-        ],
-        "CorrectIndex": 1
-      },
-      {
-        "Text": "Which part of MVC is responsible for handling user input?",
-        "Options": [
-          "Model",
-          "View",
-          "Controller",
-          "Template"
-        ],
-        "CorrectIndex": 2
-      },
-      {
-        "Text": "Which annotation is used to define a controller in Spring MVC?",
-        "Options": [
-          "@Component",
-          "@Controller",
-          "@RestService",
-          "@MVCController"
-        ],
-        "CorrectIndex": 1
-      },
-      {
-        "Text": "Which method is used to define a GET route in Express?",
-        "Options": [
-          "app.route()",
-          "app.get()",
-          "express.get()",
-          "router.create()"
-        ],
-        "CorrectIndex": 1
-      }
-    ]
-  }
+    {
+        "Id": "mvc",
+        "Title": "ASP.NET Core MVC Fundamentals",
+        "Questions": [
+            {
+                "Text": "Which method in a controller returns a View in ASP.NET Core MVC?",
+                "Options": [ "Display()", "Show()", "View()", "Render()" ],
+                "CorrectIndex": 2
+            },
+            {
+                "Text": "In MVC architecture, what does the 'C' stand for?",
+                "Options": [ "Code", "Controller", "Class", "Content" ],
+                "CorrectIndex": 1
+            },
+            {
+                "Text": "Which part of MVC is responsible for handling user input?",
+                "Options": [ "Model", "View", "Controller", "Template" ],
+                "CorrectIndex": 2
+            },
+            {
+                "Text": "Which attribute is used to define a controller in ASP.NET Core?",
+                "Options": [ "[Route]", "[ApiController]", "[Controller]", "[HttpController]" ],
+                "CorrectIndex": 2
+            },
+            {
+                "Text": "What is the default view engine in ASP.NET Core MVC?",
+                "Options": [ "Razor", "Blazor", "JSP", "EJS" ],
+                "CorrectIndex": 0
+            }
+        ]
+    },
+    {
+        "Id": "aspnet",
+        "Title": "ASP.NET & Web Basics",
+        "Questions": [
+            {
+                "Text": "Which tag helper is used to generate a link in Razor views?",
+                "Options": [ "asp-link", "asp-anchor", "asp-controller and asp-action", "anchor-tag" ],
+                "CorrectIndex": 2
+            },
+            {
+                "Text": "Which middleware serves static files?",
+                "Options": [ "UseFiles()", "UseStaticFiles()", "AddStatic()", "ServeFiles()" ],
+                "CorrectIndex": 1
+            },
+            {
+                "Text": "Default folder for static assets?",
+                "Options": [ "Content", "Public", "wwwroot", "assets" ],
+                "CorrectIndex": 2
+            },
+            {
+                "Text": "Which status code means Not Found?",
+                "Options": [ "200", "302", "404", "500" ],
+                "CorrectIndex": 2
+            },
+            {
+                "Text": "What does DI stand for?",
+                "Options": [ "Direct Injection", "Dependency Injection", "Delegate Injection", "Default Injection" ],
+                "CorrectIndex": 1
+            }
+        ]
+    },
+    {
+        "Id": "football",
+        "Title": "Football (Soccer) Rules",
+        "Questions": [
+            {
+                "Id": "football_q1",
+                "Text": "How many players per team on the field?",
+                "Options": [ "9", "10", "11", "12" ],
+                "CorrectIndex": 2
+            },
+            {
+                "Id": "football_q2",
+                "Text": "Offside occurs when…",
+                "Options": [
+                    "Ball crosses goal line",
+                    "Player is nearer to opponent's goal line than both the ball and second-last opponent",
+                    "Foul in penalty area",
+                    "Keeper handles back-pass"
+                ],
+                "CorrectIndex": 1
+            },
+            {
+                "Id": "football_q3",
+                "Text": "Duration of a standard match?",
+                "Options": [ "2×35 min", "2×40 min", "2×45 min", "90 min continuous" ],
+                "CorrectIndex": 2
+            },
+            {
+                "Id": "football_q4",
+                "Text": "How many points for a win in league format?",
+                "Options": [ "2", "3", "4", "5" ],
+                "CorrectIndex": 1
+            },
+            {
+                "Id": "football_q5",
+                "Text": "VAR stands for…",
+                "Options": [
+                    "Video Assistant Referee",
+                    "Virtual Angle Replay",
+                    "Verified Action Review",
+                    "Video Action Ref"
+                ],
+                "CorrectIndex": 0
+            }
+        ]
+    },
+    {
+        "Id": "nature",
+        "Title": "Nature & Animals",
+        "Questions": [
+            {
+                "Text": "What is the largest mammal?",
+                "Options": [ "Elephant", "Blue whale", "Giraffe", "Hippopotamus" ],
+                "CorrectIndex": 1
+            },
+            {
+                "Text": "Which process produces oxygen in plants?",
+                "Options": [ "Respiration", "Photosynthesis", "Fermentation", "Transpiration" ],
+                "CorrectIndex": 1
+            },
+            {
+                "Text": "Deserts typically have…",
+                "Options": [ "High rainfall", "Low rainfall", "Permafrost", "Monsoons" ],
+                "CorrectIndex": 1
+            },
+            {
+                "Text": "Bees mainly collect…",
+                "Options": [ "Chlorophyll", "Pollen and nectar", "Sap", "Seeds" ],
+                "CorrectIndex": 1
+            },
+            {
+                "Text": "Which is NOT a reptile?",
+                "Options": [ "Snake", "Lizard", "Frog", "Turtle" ],
+                "CorrectIndex": 2
+            }
+        ]
+    }
 ]

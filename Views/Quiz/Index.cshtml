@@ -2,60 +2,256 @@
 @{
     ViewData["Title"] = Model.Title;
     var minutes = (int)ViewBag.Minutes;
+    var isShuffled = ViewBag.IsShuffled as bool? ?? true;
+    var quizId = ViewBag.QuizId as string ?? Model.Id;
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="mb-0">@Model.Title</h1>
-    <div class="d-flex gap-2 align-items-center">
-        <span class="badge bg-dark badge-lg">Elapsed: <span id="stopwatch">00:00</span></span>
-        <span class="badge bg-primary badge-lg">Time left: <span id="timer">@minutes:00</span></span>
+<div class="container-fluid">
+    <!-- Quiz Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div class="flex-grow-1">
+                    <h1 class="fw-bold text-primary mb-2">@Model.Title</h1>
+                    <p class="text-muted mb-0">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Answer all @Model.Questions.Count questions below before the timer runs out.
+                    </p>
+                </div>
+                <div class="text-end">
+                    <div class="d-flex flex-column flex-sm-row gap-2">
+                        <span class="badge bg-dark fs-6 badge-timer">
+                            <i class="bi bi-stopwatch me-1"></i>Elapsed: <span id="stopwatch">00:00</span>
+                        </span>
+                        <span class="badge bg-primary fs-6 badge-timer" id="timer-badge">
+                            <i class="bi bi-clock me-1"></i>Time left: <span id="timer">@minutes:00</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!-- Progress Bar -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="progress" style="height: 8px;">
+                <div class="progress-bar bg-info" role="progressbar" id="progress-bar" style="width: 0%"></div>
+            </div>
+            <small class="text-muted mt-1 d-block">
+                <span id="progress-text">0 of @Model.Questions.Count questions answered</span>
+            </small>
+        </div>
+    </div>
+
+    <!-- Quiz Form -->
+    <form asp-action="Result" method="post" class="fade-in-up" id="quiz-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="quizId" value="@quizId" />
+
+        @for (int i = 0; i < Model.Questions.Count; i++)
+        {
+            var q = Model.Questions[i];
+            <div class="mb-4 p-4 border rounded-4 shadow-sm bg-white quiz-question" data-question="@i">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-semibold text-secondary mb-0">
+                        <i class="bi bi-question-circle me-2"></i>
+                        Question @(i + 1) of @Model.Questions.Count
+                    </h5>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="text-muted small">#@q.Id</span>
+                        <span class="badge bg-light text-dark" id="status-@i" style="display: none;">
+                            <i class="bi bi-check-circle text-success"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <p class="fw-bold fs-5 text-dark mb-4">@q.Text</p>
+
+                <div class="options-container">
+                    @for (int j = 0; j < q.Options.Count; j++)
+                    {
+                        <label class="form-check form-check-lg ps-4 mb-3 option-line" data-option="@j">
+                            <input class="form-check-input me-3" type="radio" name="answers[@i]" value="@j" 
+                                   data-question="@i" data-option="@j" />
+                            <span class="form-check-label fs-6">
+                                <span class="option-letter">@("ABCD"[j]).</span> 
+                                <span class="option-text">@q.Options[j]</span>
+                            </span>
+                        </label>
+                    }
+                </div>
+            </div>
+        }
+
+        <!-- Action Buttons -->
+        <div class="d-flex flex-wrap gap-3 justify-content-center mb-5">
+            <button type="submit" class="btn btn-success btn-lg px-5" id="submit-btn">
+                <i class="bi bi-check2-circle me-2"></i>Submit Answers
+            </button>
+            <form asp-action="Retake" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="quizId" value="@quizId" />
+                <button type="submit" class="btn btn-outline-secondary btn-lg px-4">
+                    <i class="bi bi-arrow-counterclockwise me-1"></i>Retake
+                </button>
+            </form>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-primary btn-lg px-4">
+                <i class="bi bi-house me-1"></i>Home
+            </a>
+        </div>
+    </form>
 </div>
 
-<!-- Форма за резултата -->
-<form asp-action="Result" method="post" class="fade-in-up">
-    @Html.AntiForgeryToken()
-    <input type="hidden" name="quizId" value="@Model.Id" />
-
-    @for (int i = 0; i < Model.Questions.Count; i++)
-    {
-        var q = Model.Questions[i];
-        <div class="mb-4 p-3 border rounded bg-white">
-            <div class="d-flex justify-content-between align-items-center mb-1">
-                <h5 class="mb-0 text-secondary">Question @(i + 1) of @Model.Questions.Count</h5>
-                <span class="text-muted small">@q.Id</span>
-            </div>
-            <p class="fw-semibold fs-5 mb-2">@q.Text</p>
-
-            @for (int j = 0; j < q.Options.Count; j++)
-            {
-                <label class="form-check option-line fs-6">
-                    <input class="form-check-input me-2" type="radio" name="answers[@i]" value="@j" />
-                    <span class="form-check-label">
-                        <strong>@("ABCD"[j]).</strong> @q.Options[j]
-                    </span>
-                </label>
-            }
-        </div>
-    }
-
-    <button type="submit" class="btn btn-success btn-lg">
-        Submit
-    </button>
-</form>
-
-<!-- Отделна форма за Retake (вън от горната!) -->
-<form asp-action="Retake" method="post" class="mt-3">
-    @Html.AntiForgeryToken()
-    <input type="hidden" name="quizId" value="@Model.Id" />
-    <button type="submit" class="btn btn-outline-secondary btn-lg">
-        Retake Quiz
-    </button>
-</form>
+<!-- Page Loader -->
+<div id="page-loader" class="page-loader d-none">
+    <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+    <div class="loader-text">Processing your answers...</div>
+</div>
 
 @section Scripts {
     <script>
-        window.startCountdown && window.startCountdown(@minutes);
-        window.startStopwatch && window.startStopwatch();
+        // Initialize quiz functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Start timers
+            if (window.startCountdown) window.startCountdown(@minutes);
+            if (window.startStopwatch) window.startStopwatch();
+            
+            // Enable auto-save
+            if (window.enableAutoSave) window.enableAutoSave(30);
+            
+            // Restore saved answers
+            if (window.restoreAnswers) window.restoreAnswers();
+            
+            // Initialize quiz interactions
+            initializeQuizInteractions();
+        });
+
+        function initializeQuizInteractions() {
+            const form = document.getElementById('quiz-form');
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            const totalQuestions = @Model.Questions.Count;
+            
+            // Track answered questions
+            const answeredQuestions = new Set();
+            
+            // Update progress
+            function updateProgress() {
+                const answered = answeredQuestions.size;
+                const percentage = (answered / totalQuestions) * 100;
+                
+                progressBar.style.width = percentage + '%';
+                progressText.textContent = `${answered} of ${totalQuestions} questions answered`;
+                
+                // Update submit button state
+                const submitBtn = document.getElementById('submit-btn');
+                if (answered === totalQuestions) {
+                    submitBtn.classList.remove('btn-success');
+                    submitBtn.classList.add('btn-primary');
+                    submitBtn.innerHTML = '<i class="bi bi-rocket-takeoff me-2"></i>Submit All Answers';
+                } else {
+                    submitBtn.classList.remove('btn-primary');
+                    submitBtn.classList.add('btn-success');
+                    submitBtn.innerHTML = '<i class="bi bi-check2-circle me-2"></i>Submit Answers';
+                }
+            }
+            
+            // Handle option selection
+            form.addEventListener('change', function(e) {
+                if (e.target.type === 'radio' && e.target.name.startsWith('answers[')) {
+                    const questionIndex = parseInt(e.target.dataset.question);
+                    answeredQuestions.add(questionIndex);
+                    
+                    // Update question status
+                    const statusBadge = document.getElementById(`status-${questionIndex}`);
+                    if (statusBadge) {
+                        statusBadge.style.display = 'inline-block';
+                    }
+                    
+                    // Update option styling
+                    const questionDiv = e.target.closest('.quiz-question');
+                    const allOptions = questionDiv.querySelectorAll('.option-line');
+                    allOptions.forEach(option => {
+                        option.classList.remove('selected');
+                    });
+                    e.target.closest('.option-line').classList.add('selected');
+                    
+                    updateProgress();
+                }
+            });
+            
+            // Form validation before submit
+            form.addEventListener('submit', function(e) {
+                const answered = answeredQuestions.size;
+                if (answered < totalQuestions) {
+                    e.preventDefault();
+                    const confirmSubmit = confirm(`You have only answered ${answered} out of ${totalQuestions} questions. Are you sure you want to submit?`);
+                    if (confirmSubmit) {
+                        // Clear any auto-save data
+                        localStorage.removeItem('quiz_answers');
+                        form.submit();
+                    }
+                } else {
+                    // Clear auto-save data on successful submit
+                    localStorage.removeItem('quiz_answers');
+                }
+            });
+            
+            // Initial progress update
+            updateProgress();
+        }
     </script>
 }
+
+<style>
+    .option-line {
+        transition: all 0.2s ease-in-out;
+        border-radius: 0.5rem;
+    }
+    
+    .option-line:hover {
+        background-color: rgba(13,110,253,.08);
+        transform: translateX(4px);
+    }
+    
+    .option-line.selected {
+        background-color: rgba(13,110,253,.1);
+        border-left: 3px solid var(--primary-color);
+    }
+    
+    .option-letter {
+        font-weight: 700;
+        color: var(--primary-color);
+        min-width: 2rem;
+        display: inline-block;
+    }
+    
+    .quiz-question {
+        transition: all 0.3s ease;
+    }
+    
+    .quiz-question:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,.1);
+    }
+    
+    .badge-timer {
+        font-family: 'Courier New', monospace;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+    
+    @@media (max-width: 768px) {
+        .d-flex.flex-wrap {
+            flex-direction: column;
+        }
+        
+        .btn-lg {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+    }
+</style>

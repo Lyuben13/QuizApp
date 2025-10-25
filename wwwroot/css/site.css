@@ -1,54 +1,85 @@
-/* Типография */
+/* CSS Variables for consistent theming */
 :root {
     --fs-base: 1.06rem;
     --fs-lg: 1.18rem;
+    --primary-color: #0d6efd;
+    --success-color: #198754;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --info-color: #0dcaf0;
+    --light-color: #f8f9fa;
+    --dark-color: #212529;
+    --border-radius: 1.25rem;
+    --box-shadow: 0 10px 28px rgba(0,0,0,.08);
+    --box-shadow-hover: 0 14px 36px rgba(0,0,0,.12);
+    --transition: all 0.3s ease-in-out;
 }
 
+/* Typography */
 body {
     font-size: var(--fs-base);
     line-height: 1.45;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 h1 {
     font-size: clamp(1.6rem, 2.2vw + 1rem, 2.2rem);
+    font-weight: 700;
 }
 
 h5 {
     font-size: 1.05rem;
+    font-weight: 600;
 }
 
-/* Карти/контейнери */
+/* Cards and containers */
 .card, .border.rounded {
-    border-radius: 1.25rem !important;
-    box-shadow: 0 10px 28px rgba(0,0,0,.08);
+    border-radius: var(--border-radius) !important;
+    box-shadow: var(--box-shadow);
+    border: 1px solid rgba(0,0,0,.05);
+    transition: var(--transition);
 }
 
-    .card:hover {
-        transform: translateY(-2px);
-        transition: .2s ease;
-        box-shadow: 0 14px 36px rgba(0,0,0,.12);
-    }
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--box-shadow-hover);
+}
 
-/* Loader overlay */
+/* Enhanced loader overlay */
 .page-loader {
     position: fixed;
     inset: 0;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: rgba(255,255,255,.85);
+    background: rgba(255,255,255,.95);
     z-index: 2000;
-    backdrop-filter: blur(2px);
+    backdrop-filter: blur(3px);
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.page-loader.show {
+    opacity: 1;
 }
 
 .spinner-border {
     width: 3rem;
     height: 3rem;
+    border-width: 0.3em;
+    color: var(--primary-color);
 }
 
-/* Интерактивни ефекти */
+.loader-text {
+    margin-top: 1rem;
+    color: var(--dark-color);
+    font-weight: 500;
+}
+
+/* Animations */
 .fade-in-up {
-    animation: fadeInUp .45s ease both;
+    animation: fadeInUp 0.45s ease both;
 }
 
 @keyframes fadeInUp {
@@ -56,25 +87,221 @@ h5 {
         opacity: 0;
         transform: translateY(8px);
     }
-
     to {
         opacity: 1;
         transform: none;
     }
 }
 
-.option-line {
-    padding: .25rem .5rem;
-    border-radius: .6rem;
+.fade-in {
+    animation: fadeIn 0.3s ease both;
 }
 
-    .option-line:hover {
-        background: rgba(13,110,253,.06);
-    }
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
 
-/* Значки за таймери */
+.slide-in-right {
+    animation: slideInRight 0.4s ease both;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* Quiz specific styles */
+.quiz-question {
+    transition: var(--transition);
+    border-left: 4px solid transparent;
+}
+
+.quiz-question:hover {
+    border-left-color: var(--primary-color);
+    transform: translateX(2px);
+}
+
+.option-line {
+    padding: .5rem .75rem;
+    border-radius: .6rem;
+    transition: var(--transition);
+    cursor: pointer;
+    border: 2px solid transparent;
+}
+
+.option-line:hover {
+    background: rgba(13,110,253,.08);
+    border-color: rgba(13,110,253,.2);
+    transform: translateX(4px);
+}
+
+.option-line.selected {
+    background: rgba(13,110,253,.1);
+    border-color: var(--primary-color);
+}
+
+/* Timer styles */
+.timer-warning {
+    animation: pulse 1s infinite;
+}
+
+.timer-critical {
+    animation: shake 0.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-2px); }
+    75% { transform: translateX(2px); }
+}
+
+/* Badge enhancements */
 .badge-lg {
     font-size: .9rem;
     padding: .6rem .75rem;
     border-radius: .75rem;
+    font-weight: 600;
+}
+
+.badge-timer {
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+/* Progress bar enhancements */
+.progress {
+    height: 1rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    background-color: rgba(0,0,0,.1);
+}
+
+.progress-bar {
+    transition: width 0.6s ease;
+    border-radius: 0.5rem;
+}
+
+/* Button enhancements */
+.btn {
+    transition: var(--transition);
+    font-weight: 500;
+    border-radius: 0.5rem;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+/* Form enhancements */
+.form-check-input:checked {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+}
+
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.25rem rgba(13,110,253,.25);
+}
+
+/* Table enhancements */
+.table-hover tbody tr:hover {
+    background-color: rgba(0,0,0,.02);
+    transform: scale(1.01);
+    transition: var(--transition);
+}
+
+/* Alert enhancements */
+.alert {
+    border-radius: 0.75rem;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,.1);
+}
+
+.alert-dismissible .btn-close {
+    padding: 0.75rem 1rem;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .card {
+        margin: 0.5rem;
+        border-radius: 1rem !important;
+    }
+    
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+    }
+    
+    .badge-lg {
+        font-size: 0.8rem;
+        padding: 0.5rem 0.65rem;
+    }
+}
+
+/* Dark mode support (optional) */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --box-shadow: 0 10px 28px rgba(0,0,0,.3);
+        --box-shadow-hover: 0 14px 36px rgba(0,0,0,.4);
+    }
+    
+    .page-loader {
+        background: rgba(33,37,41,.95);
+        color: white;
+    }
+    
+    .loader-text {
+        color: white;
+    }
+}
+
+/* Accessibility improvements */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Focus indicators */
+*:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+    .page-loader,
+    .btn,
+    .badge {
+        display: none !important;
+    }
+    
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #000 !important;
+    }
 }

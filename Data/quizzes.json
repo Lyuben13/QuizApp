@@ -1,0 +1,58 @@
+[
+  {
+    "Id": "mvc",
+    "Title": "ASP.NET Core MVC Basics",
+    "Questions": [
+      {
+        "Text": "Which method in a controller returns a View in ASP.NET Core MVC?",
+        "Options": [
+          "Display()",
+          "Show()",
+          "View()",
+          "Render()"
+        ],
+        "CorrectIndex": 2
+      },
+      {
+        "Text": "In MVC architecture, what does the 'C' stand for?",
+        "Options": [
+          "Code",
+          "Controller",
+          "Class",
+          "Content"
+        ],
+        "CorrectIndex": 1
+      },
+      {
+        "Text": "Which part of MVC is responsible for handling user input?",
+        "Options": [
+          "Model",
+          "View",
+          "Controller",
+          "Template"
+        ],
+        "CorrectIndex": 2
+      },
+      {
+        "Text": "Which annotation is used to define a controller in Spring MVC?",
+        "Options": [
+          "@Component",
+          "@Controller",
+          "@RestService",
+          "@MVCController"
+        ],
+        "CorrectIndex": 1
+      },
+      {
+        "Text": "Which method is used to define a GET route in Express?",
+        "Options": [
+          "app.route()",
+          "app.get()",
+          "express.get()",
+          "router.create()"
+        ],
+        "CorrectIndex": 1
+      }
+    ]
+  }
+]

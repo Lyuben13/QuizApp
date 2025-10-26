@@ -81,7 +81,8 @@ public class QuizController : Controller
             if (originalQuiz == null)
             {
                 _logger.LogWarning("Quiz with id '{QuizId}' not found in Result action", quizId);
-                return NotFound("Quiz not found.");
+                //return NotFound("Quiz not found.");
+                return View("NotFound");
             }
 
             // Normalize answers to match question count

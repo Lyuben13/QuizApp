@@ -23,6 +23,8 @@ public class QuizController : Controller
             var quiz = _repo.GetById(id);
             if (quiz == null)
             {
+                var baseQuiz = _repo.GetById(id);
+                if (baseQuiz == null) return View("NotFound");
                 _logger.LogWarning("Quiz with id '{QuizId}' not found", id);
                 return NotFound($"Quiz with id '{id}' not found.");
             }

@@ -50,7 +50,6 @@ dotnet run
 * ❓ Въпроси с по четири възможни отговора (A–D)
 * ✅ Изчисляване на резултатите и показване на верните отговори
 * 🔁 Възможност за повторно решаване (**Retake Quiz**)
-* 🔀 Разбъркване на въпросите и отговорите при всяко зареждане
 * ⏱️ Таймер с обратно броене (по подразбиране 10 минути)
 * 🗂️ Зареждане на тестове от JSON файл (`Data/quizzes.json`)
 
@@ -58,7 +57,6 @@ dotnet run
 > - ❓ Multiple-choice questions (A–D)
 > - ✅ Score calculation and feedback on correct answers
 > - 🔁 **Retake Quiz** button for retrying
-> - 🔀 Random shuffle of questions and options on each load
 > - ⏱️ Countdown timer (default 10 minutes)
 > - 🗂️ Data loaded from a JSON file (`Data/quizzes.json`)
 

@@ -8,6 +8,7 @@ public class QuizController : Controller
 {
     private readonly IQuizRepository _repo;
     private readonly ILogger<QuizController> _logger;
+    private static readonly Random _rng = new();
 
     public QuizController(IQuizRepository repo, ILogger<QuizController> logger)
     {
@@ -19,14 +20,14 @@ public class QuizController : Controller
     public IActionResult Index(string id = "mvc", bool shuffle = false, int? minutes = null)
     {
         try
-        {
-            var quiz = _repo.GetById(id);
-            if (quiz == null)
+    {
+        var quiz = _repo.GetById(id);
+        if (quiz == null)
             {
                 var baseQuiz = _repo.GetById(id);
                 if (baseQuiz == null) return View("NotFound");
                 _logger.LogWarning("Quiz with id '{QuizId}' not found", id);
-                return NotFound($"Quiz with id '{id}' not found.");
+            return NotFound($"Quiz with id '{id}' not found.");
             }
 
             // Validate quiz has questions
@@ -50,9 +51,14 @@ public class QuizController : Controller
                 }).ToList()
             };
 
-            // No shuffling - keep original order
+            // Shuffle if requested
+            if (shuffle)
+            {
+                ShuffleQuiz(quizCopy);
+            }
+
             ViewBag.Minutes = Math.Max(1, minutes ?? 10); // Ensure minimum 1 minute
-            ViewBag.IsShuffled = false;
+            ViewBag.IsShuffled = shuffle;
             ViewBag.QuizId = id;
 
             return View(quizCopy);
@@ -125,6 +131,51 @@ public class QuizController : Controller
 
     #region Private Helper Methods
 
+    private void ShuffleQuiz(Quiz quiz)
+    {
+        // Create a deep copy of questions to avoid modifying the original
+        var questionsToShuffle = quiz.Questions.Select(q => new Question
+        {
+            Id = q.Id,
+            Text = q.Text,
+            Options = new List<string>(q.Options),
+            CorrectIndex = q.CorrectIndex
+        }).ToList();
+        
+        // Shuffle questions using Fisher-Yates algorithm
+        for (int i = questionsToShuffle.Count - 1; i > 0; i--)
+        {
+            int j = _rng.Next(i + 1);
+            (questionsToShuffle[i], questionsToShuffle[j]) = (questionsToShuffle[j], questionsToShuffle[i]);
+        }
+        
+        for (int i = 0; i < questionsToShuffle.Count; i++)
+        {
+            var question = questionsToShuffle[i];
+            var originalOptions = question.Options.ToList();
+            var correctAnswer = originalOptions[question.CorrectIndex];
+            
+            // Shuffle options using Fisher-Yates algorithm
+            for (int k = originalOptions.Count - 1; k > 0; k--)
+            {
+                int l = _rng.Next(k + 1);
+                (originalOptions[k], originalOptions[l]) = (originalOptions[l], originalOptions[k]);
+            }
+            
+            question.Options = originalOptions;
+            
+            // Update correct index
+            question.CorrectIndex = originalOptions.IndexOf(correctAnswer);
+            
+            if (question.CorrectIndex == -1)
+            {
+                _logger.LogError("Correct answer not found after shuffling for question {QuestionId}", question.Id);
+                throw new InvalidOperationException($"Correct answer not found after shuffling for question {question.Id}");
+            }
+        }
+        
+        quiz.Questions = questionsToShuffle;
+    }
 
     private List<int> NormalizeAnswers(List<int> answers, int totalQuestions)
     {

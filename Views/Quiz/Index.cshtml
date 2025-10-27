@@ -17,8 +17,8 @@
                         <i class="bi bi-info-circle me-1"></i>
                         Answer all @Model.Questions.Count questions below before the timer runs out.
                     </p>
-                </div>
-                <div class="text-end">
+    </div>
+    <div class="text-end">
                     <div class="d-flex flex-column flex-sm-row gap-2">
                         <span class="badge bg-dark fs-6 badge-timer">
                             <i class="bi bi-stopwatch me-1"></i>Elapsed: <span id="stopwatch">00:00</span>
@@ -41,61 +41,61 @@
             <small class="text-muted mt-1 d-block">
                 <span id="progress-text">0 of @Model.Questions.Count questions answered</span>
             </small>
-        </div>
     </div>
+</div>
 
     <!-- Quiz Form -->
     <form asp-action="Result" method="post" class="fade-in-up" id="quiz-form">
-        @Html.AntiForgeryToken()
+    @Html.AntiForgeryToken()
         <input type="hidden" name="quizId" value="@quizId" />
 
-        @for (int i = 0; i < Model.Questions.Count; i++)
-        {
-            var q = Model.Questions[i];
+    @for (int i = 0; i < Model.Questions.Count; i++)
+    {
+        var q = Model.Questions[i];
             <div class="mb-4 p-4 border rounded-4 shadow-sm bg-white quiz-question" data-question="@i">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="fw-semibold text-secondary mb-0">
+                <h5 class="fw-semibold text-secondary mb-0">
                         <i class="bi bi-question-circle me-2"></i>
-                        Question @(i + 1) of @Model.Questions.Count
-                    </h5>
+                    Question @(i + 1) of @Model.Questions.Count
+                </h5>
                     <div class="d-flex align-items-center gap-2">
-                        <span class="text-muted small">#@q.Id</span>
+                <span class="text-muted small">#@q.Id</span>
                         <span class="badge bg-light text-dark" id="status-@i" style="display: none;">
                             <i class="bi bi-check-circle text-success"></i>
                         </span>
                     </div>
-                </div>
+            </div>
 
                 <p class="fw-bold fs-5 text-dark mb-4">@q.Text</p>
 
                 <div class="options-container">
-                    @for (int j = 0; j < q.Options.Count; j++)
-                    {
+            @for (int j = 0; j < q.Options.Count; j++)
+            {
                         <label class="form-check form-check-lg ps-4 mb-3 option-line" data-option="@j">
                             <input class="form-check-input me-3" type="radio" name="answers[@i]" value="@j" 
                                    data-question="@i" data-option="@j" />
-                            <span class="form-check-label fs-6">
+                    <span class="form-check-label fs-6">
                                 <span class="option-letter">@("ABCD"[j]).</span> 
                                 <span class="option-text">@q.Options[j]</span>
-                            </span>
-                        </label>
-                    }
+                    </span>
+                </label>
+            }
                 </div>
-            </div>
-        }
+        </div>
+    }
 
         <!-- Action Buttons -->
         <div class="d-flex flex-wrap gap-3 justify-content-center mb-5">
             <button type="submit" class="btn btn-success btn-lg px-5" id="submit-btn">
-                <i class="bi bi-check2-circle me-2"></i>Submit Answers
-            </button>
+            <i class="bi bi-check2-circle me-2"></i>Submit Answers
+        </button>
             <form asp-action="Retake" method="post" class="d-inline">
-                @Html.AntiForgeryToken()
+            @Html.AntiForgeryToken()
                 <input type="hidden" name="quizId" value="@quizId" />
-                <button type="submit" class="btn btn-outline-secondary btn-lg px-4">
-                    <i class="bi bi-arrow-counterclockwise me-1"></i>Retake
-                </button>
-            </form>
+            <button type="submit" class="btn btn-outline-secondary btn-lg px-4">
+                <i class="bi bi-arrow-counterclockwise me-1"></i>Retake
+            </button>
+        </form>
             <a asp-controller="Home" asp-action="Index" class="btn btn-outline-primary btn-lg px-4">
                 <i class="bi bi-house me-1"></i>Home
             </a>

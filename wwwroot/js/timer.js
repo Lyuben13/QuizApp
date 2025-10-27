@@ -21,7 +21,7 @@ class QuizTimer {
 
         const timerEl = document.getElementById("timer");
         const form = document.querySelector('form[method="post"][action$="Result"]') ||
-            document.querySelector('form[action="/Quiz/Result"]');
+        document.querySelector('form[action="/Quiz/Result"]');
 
         if (!timerEl) {
             console.warn("Timer element not found");

@@ -48,14 +48,17 @@ dotnet run
 
 * 🏠 Начална страница със списък от налични тестове
 * ❓ Въпроси с по четири възможни отговора (A–D)
+
 * ✅ Изчисляване на резултатите и показване на верните отговори
 * 🔁 Възможност за повторно решаване (**Retake Quiz**)
+* 🔄 Пусни разбъркването на въпросите с /Quiz/Index?id=mvc&shuffle=true
 * ⏱️ Таймер с обратно броене (по подразбиране 10 минути)
 * 🗂️ Зареждане на тестове от JSON файл (`Data/quizzes.json`)
 
 > - 🏠 Home page with a list of available quizzes
 > - ❓ Multiple-choice questions (A–D)
 > - ✅ Score calculation and feedback on correct answers
+> - 🔀 Enable shuffling of questions and answers with `/Quiz/Index?id=football&shuffle=true`
 > - 🔁 **Retake Quiz** button for retrying
 > - ⏱️ Countdown timer (default 10 minutes)
 > - 🗂️ Data loaded from a JSON file (`Data/quizzes.json`)

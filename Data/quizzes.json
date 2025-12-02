@@ -66,13 +66,11 @@
         "Title": "Football (Soccer) Rules",
         "Questions": [
             {
-                "Id": "football_q1",
                 "Text": "How many players per team on the field?",
                 "Options": [ "9", "10", "11", "12" ],
                 "CorrectIndex": 2
             },
             {
-                "Id": "football_q2",
                 "Text": "Offside occurs when…",
                 "Options": [
                     "Ball crosses goal line",
@@ -83,19 +81,16 @@
                 "CorrectIndex": 1
             },
             {
-                "Id": "football_q3",
                 "Text": "Duration of a standard match?",
                 "Options": [ "2×35 min", "2×40 min", "2×45 min", "90 min continuous" ],
                 "CorrectIndex": 2
             },
             {
-                "Id": "football_q4",
                 "Text": "How many points for a win in league format?",
                 "Options": [ "2", "3", "4", "5" ],
                 "CorrectIndex": 1
             },
             {
-                "Id": "football_q5",
                 "Text": "VAR stands for…",
                 "Options": [
                     "Video Assistant Referee",
@@ -135,6 +130,62 @@
                 "Text": "Which is NOT a reptile?",
                 "Options": [ "Snake", "Lizard", "Frog", "Turtle" ],
                 "CorrectIndex": 2
+            }
+        ]
+    },
+    {
+        "Id": "git",
+        "Title": "Git Basics (BG)",
+        "Questions": [
+            {
+                "Text": "Кое твърдение описва най-точно Git?",
+                "Options": [
+                    "Инструмент за писане на код",
+                    "Облачна платформа за съхранение на код",
+                    "Разпределена система за контрол на версиите",
+                    "Програмен език"
+                ],
+                "CorrectIndex": 2
+            },
+            {
+                "Text": "Какво съдържа едно Git repository?",
+                "Options": [
+                    "Кода, историята и клоновете",
+                    "Само кода",
+                    "Кода и документацията",
+                    "Само историята на проекта"
+                ],
+                "CorrectIndex": 0
+            },
+            {
+                "Text": "Какво е commit?",
+                "Options": [
+                    "Качване на код в GitHub",
+                    "Сливане на два клона",
+                    "Създаване на нов branch",
+                    "Запис на промени с описание, автор и хеш"
+                ],
+                "CorrectIndex": 3
+            },
+            {
+                "Text": "Какво е merge conflict?",
+                "Options": [
+                    "Когато липсва commit съобщение",
+                    "Когато два клона не могат да се слеят автоматично",
+                    "Когато се качват bin/ и obj/ файлове",
+                    "Когато се работи директно в main"
+                ],
+                "CorrectIndex": 1
+            },
+            {
+                "Text": "Защо е важен файлът .gitignore?",
+                "Options": [
+                    "За да пази пароли",
+                    "За да изключва ненужни или генерирани файлове от репото",
+                    "За да създава нови branch-ове",
+                    "За да ускорява merge процеса"
+                ],
+                "CorrectIndex": 1
             }
         ]
     }

@@ -8,4 +8,8 @@
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <UseAppHost>false</UseAppHost>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="xunit.abstractions" Version="2.0.3" />
+  </ItemGroup>
 </Project>

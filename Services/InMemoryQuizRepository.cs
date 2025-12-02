@@ -26,6 +26,11 @@ public class InMemoryQuizRepository : IQuizRepository
         };
     }
 
+    public InMemoryQuizRepository(List<Quiz> quizzes)
+    {
+        _quizzes = quizzes ?? new List<Quiz>();
+    }
+
     public IEnumerable<Quiz> GetAll() => _quizzes;
 
     public Quiz GetById(string id) => _quizzes.FirstOrDefault(q => q.Id == id) ?? _quizzes.First();

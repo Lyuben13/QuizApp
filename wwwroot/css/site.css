@@ -40,10 +40,10 @@ h5 {
     transition: var(--transition);
 }
 
-.card:hover {
-    transform: translateY(-2px);
+    .card:hover {
+        transform: translateY(-2px);
     box-shadow: var(--box-shadow-hover);
-}
+    }
 
 /* Enhanced loader overlay */
 .page-loader {
@@ -136,7 +136,7 @@ h5 {
     border: 2px solid transparent;
 }
 
-.option-line:hover {
+    .option-line:hover {
     background: rgba(13,110,253,.08);
     border-color: rgba(13,110,253,.2);
     transform: translateX(4px);
